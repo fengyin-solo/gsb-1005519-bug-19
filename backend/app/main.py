@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.routers import ROUTERS
+from app.services.environment import EnvironmentService
 from app.store import store
 
 app = FastAPI(title="光伏电站运维管理平台", version="1.0.0")
@@ -24,6 +25,9 @@ app.add_middleware(
 
 for module in ROUTERS:
     app.include_router(module.router)
+
+# 启动即把既有环境监测数据（含空测记录）的缺测时段同步成巡视待办
+EnvironmentService().sync_all()
 
 
 @app.get("/api/health")
